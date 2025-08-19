@@ -6,6 +6,7 @@ from materials.models import Course, Lesson
 
 class User(AbstractUser):
     """Модель Пользователь"""
+
     username = None
 
     email = models.EmailField(
@@ -34,6 +35,7 @@ class User(AbstractUser):
 
 class Payment(models.Model):
     """Модель Платежи"""
+
     CASH = "Наличные"
     BANK_TRANSFER = "Перевод на счет"
     PAYMENT_METHOD = (
@@ -88,4 +90,7 @@ class Payment(models.Model):
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
-        ordering = ("date_payment", "payment_method",)
+        ordering = (
+            "date_payment",
+            "payment_method",
+        )
