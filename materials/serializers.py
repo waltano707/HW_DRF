@@ -1,17 +1,22 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, URLField
 
 from materials.models import Course, Lesson
+from materials.validators import validate_forbidden_video
 
 
 class LessonSerializer(ModelSerializer):
-    course = SerializerMethodField()
+    """Сериализация урока"""
+
+    link = URLField(validators=[validate_forbidden_video], required=False)
 
     class Meta:
         model = Lesson
-        fields = "__all__"
+        fields = ["id", "title", "description", "link", "course", "owner"]
 
 
 class CourseSerializer(ModelSerializer):
+    """Сериализация курса с количеством уроков"""
+
     lesson = LessonSerializer()
     count_lesson = SerializerMethodField()
 
