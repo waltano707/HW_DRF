@@ -16,6 +16,12 @@ from rest_framework.viewsets import ModelViewSet
 from materials.models import Course
 from users.models import Payment, Subscription, User
 from users.serializers import PaymentSerializer, SubscriptionSerializer, UserSerializer
+from users.services import (
+    convert_rub_to_usd,
+    create_stripe_course,
+    create_stripe_price,
+    create_stripe_session,
+)
 
 
 class UserViewSet(ModelViewSet):
@@ -47,6 +53,16 @@ class PaymentListAPIView(ListAPIView):
 class PaymentCreateAPIView(CreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        amount_to_usd = convert_rub_to_usd(payment.payment_amount)
+        product_strip = create_stripe_course()
+        price_strip = create_stripe_price(amount_to_usd, product_strip)
+        session_id, payment_link = create_stripe_session(price_strip)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()
 
 
 class PaymentRetrieveAPIView(RetrieveAPIView):
