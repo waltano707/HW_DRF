@@ -94,3 +94,31 @@ class Payment(models.Model):
             "date_payment",
             "payment_method",
         )
+
+
+class Subscription(models.Model):
+    """Модель Подписка"""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        null=True,
+        blank=True,
+        help_text="Укажите пользователя",
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        verbose_name="Курс",
+        null=True,
+        blank=True,
+        help_text="Укажите курс",
+    )
+
+    def __str__(self):
+        return f"{self.user, self.course}"
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
