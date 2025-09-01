@@ -43,6 +43,14 @@ class Payment(models.Model):
         (BANK_TRANSFER, "Перевод на счет"),
     )
 
+    session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="id сессии",
+        help_text="Укажите id сессии",
+    )
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -82,6 +90,14 @@ class Payment(models.Model):
         default=CASH,
         verbose_name="Способ оплаты",
         help_text="Выберите способ оплаты",
+    )
+
+    link = models.URLField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name="Ссылка на оплату",
+        help_text="Укажите ссылку на оплату)",
     )
 
     def __str__(self):
