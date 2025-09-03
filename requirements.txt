@@ -11,3 +11,6 @@ ipython==9.4.0
 drf-yasg==1.21.10
 stripe==12.5.0
 forex-python==1.9.2
+celery==5.5.3
+redis==6.2.0
+django-celery-beat==2.8.1

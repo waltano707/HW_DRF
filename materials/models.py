@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 
@@ -29,6 +31,9 @@ class Course(models.Model):
         blank=True,
         verbose_name="Студент",
         help_text="Укажите студента",
+    )
+    update = models.DateTimeField(
+        default=datetime.now, verbose_name="Время обновления", null=True, blank=True
     )
 
     class Meta:
