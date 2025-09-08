@@ -1,20 +1,17 @@
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-)
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course, Lesson
 from materials.paginators import CustomPagination
-from materials.serializers import (
-    CourseDetailSerializer,
-    CourseSerializer,
-    LessonSerializer,
-)
+from materials.serializers import (CourseDetailSerializer, CourseSerializer,
+                                   LessonSerializer)
+from materials.tasks import send_message_about_update_course
 from users.permissions import IsModerator, IsStudent
 
 
@@ -40,6 +37,18 @@ class CourseViewSet(ModelViewSet):
         elif self.action == "destroy":
             self.permissions_classes = (~IsModerator | IsStudent,)
         return super().get_permissions()
+
+    @action(detail=True, methods=["post"])
+    def course_update(self, request, pk):
+        course = get_object_or_404(Course, pk=pk)
+        user = request.user
+        if course.update.filter(pk=user.pk).exists():
+            course.update.remove(user)
+        else:
+            course.update.add(user)
+            send_message_about_update_course.delay(course.owner.email)
+        serializer = self.get_serializer(course)
+        return Response(data=serializer.data)
 
 
 class LessonCreateApiView(CreateAPIView):
