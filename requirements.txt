@@ -7,7 +7,7 @@ black==25.1.0
 isort==6.0.1
 django-filter==25.1
 djangorestframework_simplejwt==5.5.1
-ipython==9.4.0
+ipython==7.34.0
 drf-yasg==1.21.10
 stripe==12.5.0
 forex-python==1.9.2
