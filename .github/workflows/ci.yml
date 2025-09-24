@@ -36,9 +36,25 @@ jobs:
       - name: Run tests
         run: python manage.py tests
 
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/online_work:${{ github.sha }} .
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/online_work:${{ github.sha }}
+
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
 
     steps:
       - name: Set up SSH
@@ -46,37 +62,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Copy project files to server
+      - name: Deploy to Server
         run: |
-          rsync -avz --exclude '__pycache__' . ${{ secrets.SSH_USER }}@{{ secrets.DEPLOY_DIR }}
-
-      - name: Install dependecies on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@{{ secrets.SERVER_IP }} << 'EOF'
-            cd ${{ secrets.DEPLOY_DIR }}
-            python3 -m venv venv
-            source venv/bin/activate
-            pip install -r requirements.txt
-          EOF
-
-      - name: Apply migrations on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@{{ secrets.SERVER_IP }} << 'EOF'
-            cd ${{ secrets.DEPLOY_DIR }}
-            source venv/bin/activate
-            python3 manage.py migrate
-          EOF
-
-      - name: Collect static files on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@{{ secrets.SERVER_IP }} << 'EOF'
-            cd ${{ secrets.DEPLOY_DIR }}
-            source venv/bin/activate
-            python manage.py collectstatic --noinput
-          EOF
-
-      - name: Restart application
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@{{ secrets.SERVER_IP }} << 'EOF'
-            sudo systemctl restart myapp.service
-          EOF
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/online_work:${{ github.sha }}
+            docker stop online_work || true
+            docker rm online_work || true
+            docker run -d --name online_work -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/online_work:${{ github.sha }}
+            EOF
