@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 
 from django.db import models
 
@@ -33,12 +33,13 @@ class Course(models.Model):
         help_text="Укажите студента",
     )
     update = models.DateTimeField(
-        default=datetime.now, verbose_name="Время обновления", null=True, blank=True
+        default=timezone.now, verbose_name="Время обновления", null=True, blank=True
     )
 
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курсы"
+        ordering = ('id',)
 
 
 class Lesson(models.Model):
@@ -88,3 +89,4 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"
+        ordering = ('id',)

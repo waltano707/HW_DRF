@@ -1,6 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from django.utils import timezone
 
 from materials.models import Course, Lesson
 from users.models import Subscription, User
@@ -11,7 +12,7 @@ class LessonTestCase(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create(email="admin@sky.pro", is_staff=True)
-        self.course = Course.objects.create(title="Python")
+        self.course = Course.objects.create(title="Python", update=timezone.now())
         self.lesson = Lesson.objects.create(title="Введение", owner=self.user)
         self.client.force_authenticate(user=self.user)
 
@@ -40,9 +41,14 @@ class LessonTestCase(APITestCase):
 
     def test_lesson_delete(self):
         url = reverse("materials:lessons_destroy", args=(self.lesson.pk,))
+        self.lesson.owner = self.user
+        self.lesson.save()
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.force_login(self.user)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(Lesson.objects.all().count(), 0)
+        self.assertEqual(Lesson.objects.count(), 0)
 
     def test_lesson_list(self):
         url = reverse("materials:lessons_list")
