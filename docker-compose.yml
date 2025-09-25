@@ -27,13 +27,11 @@ services:
       - web
 
   db:
-    image: postgres
-    env:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - 5432:5432
+    image: postgres:16
+    env_file:
+      - ./.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:6
