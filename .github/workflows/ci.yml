@@ -10,6 +10,10 @@ env:
      PASSWORD: ${{ secrets.PASSWORD }}
      HOST: ${{ secrets.HOST }}
      POST: ${{ secrets.PORT }}
+     POSTGRES_DB: ${{ secrets.NAME }}
+     POSTGRES_USER: ${{ secrets.USER }}
+     POSTGRES_PASSWORD: ${{ secrets.PASSWORD }}
+     POSTGRES_HOST: db
 
 
 jobs:
