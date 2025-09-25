@@ -1,4 +1,5 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, URLField
+from rest_framework.serializers import (ModelSerializer, SerializerMethodField,
+                                        URLField)
 
 from materials.models import Course, Lesson
 from materials.validators import validate_forbidden_video

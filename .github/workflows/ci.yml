@@ -6,6 +6,11 @@ env:
      SECRET_KEY: ${{ secrets.SECRET_KEY }}
      ANOTHER_VAR: value
      NAME: ${{ secrets.NAME }}
+     USER: ${{ secrets.USER }}
+     PASSWORD: ${{ secrets.PASSWORD }}
+     HOST: ${{ secrets.HOST }}
+     POST: ${{ secrets.PORT }}
+
 
 jobs:
   lint:

@@ -1,13 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-)
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,13 +11,10 @@ from rest_framework.viewsets import ModelViewSet
 
 from materials.models import Course
 from users.models import Payment, Subscription, User
-from users.serializers import PaymentSerializer, SubscriptionSerializer, UserSerializer
-from users.services import (
-    convert_rub_to_usd,
-    create_stripe_course,
-    create_stripe_price,
-    create_stripe_session,
-)
+from users.serializers import (PaymentSerializer, SubscriptionSerializer,
+                               UserSerializer)
+from users.services import (convert_rub_to_usd, create_stripe_course,
+                            create_stripe_price, create_stripe_session)
 
 
 class UserViewSet(ModelViewSet):
