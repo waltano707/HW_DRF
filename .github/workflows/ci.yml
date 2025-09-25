@@ -5,6 +5,7 @@ on: [push, pull_request]
 env:
      SECRET_KEY: ${{ secrets.SECRET_KEY }}
      ANOTHER_VAR: value
+     NAME: ${{ secrets.NAME }}
 
 jobs:
   lint:
